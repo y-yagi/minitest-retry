@@ -26,7 +26,7 @@ module Minitest
         unless result.failures.empty?
           retry_count.times do |count|
             if Minitest::Retry.verbose && Minitest::Retry.io
-              msg = "[MiniestRetry] test: %s, retry_count: %s,  msg: %s\n" %
+              msg = "[MiniestRetry] retry '%s' count: %s,  msg: %s\n" %
                 [method_name, count + 1, result.failures.join(",")]
               Minitest::Retry.io.puts(msg)
             end
