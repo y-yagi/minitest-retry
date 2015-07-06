@@ -3,6 +3,7 @@
 Re-run the test when the test fails.
 
 [![Build Status](https://travis-ci.org/y-yagi/minitest-retry.svg?branch=master)](https://travis-ci.org/y-yagi/minitest-retry)
+[![Gem Version](https://badge.fury.io/rb/minitest-retry.svg)](http://badge.fury.io/rb/minitest-retry)
 
 ## Installation
 
