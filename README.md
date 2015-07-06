@@ -22,9 +22,49 @@ Or install it yourself as:
 
 ## Usage
 
+In your `test_helper.rb` file, add the following lines:
+
 ```ruby
 require 'minitest/retry'
-Minitest::Retry.use!(retry_count: 3)
+Minitest::Retry.use!
+```
+
+Options can be specified to `use!` method. Can specify options are as follows:
+
+```
+Minitest::Retry.use!(
+  retry_count:  3  # The number of times to retry. The default is 3.
+  verbose: true    # Whether or not to display the message at the time of retry. The default is true.
+  io: $stdout      # Display destination of retry when the message. The default is stdout.
+)
+```
+
+## Example
+
+```ruby
+
+Minitest::Retry.use!
+
+class Minitest::RetryTest < Minitest::Test
+  def test_fail
+    assert false, 'test fail'
+  end
+end
+```
+
+```console
+# Running:
+
+[MiniestRetry] retry 'test_fail' count: 1,  msg: test fail
+[MiniestRetry] retry 'test_fail' count: 2,  msg: test fail
+[MiniestRetry] retry 'test_fail' count: 3,  msg: test fail
+F
+
+Finished in 0.002479s, 403.4698 runs/s, 403.4698 assertions/s.
+
+  1) Failure:
+Minitest::RetryTest#test_fail [test/minitest/sample_test.rb:6]:
+test fail
 ```
 
 ## Contributing
