@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{re-run the test when the test fails}
   spec.description   = %q{re-run the test when the test fails}
   spec.homepage      = "https://github.com/y-yagi/minitest-retry"
+  spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
