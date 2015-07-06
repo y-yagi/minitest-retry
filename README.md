@@ -2,6 +2,8 @@
 
 Re-run the test when the test fails.
 
+[![Build Status](https://travis-ci.org/y-yagi/minitest-retry.svg?branch=master)](https://travis-ci.org/y-yagi/minitest-retry)
+
 ## Installation
 
 Add this line to your application's Gemfile:
