@@ -112,5 +112,20 @@ class Minitest::RetryTest < Minitest::Test
     refute reporter.passed?
     assert_empty output
   end
+
+  def test_donot_retry_skipped_Test
+    output = capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        Minitest::Retry.use!
+        def skip
+          skip 'skip test'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :skip, self.reporter)
+    end
+
+    refute reporter.passed?
+    assert_empty output
+  end
 end
 
