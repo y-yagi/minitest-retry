@@ -23,7 +23,7 @@ module Minitest
       def run_one_method(klass, method_name)
         retry_count = Minitest::Retry.retry_count
         result = super(klass, method_name)
-        if !result.failures.empty? && result.name != :skip
+        if !result.failures.empty? && !result.skipped?
           retry_count.times do |count|
             if Minitest::Retry.verbose && Minitest::Retry.io
               msg = "[MiniestRetry] retry '%s' count: %s,  msg: %s\n" %
