@@ -117,14 +117,14 @@ class Minitest::RetryTest < Minitest::Test
     output = capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        def skip
+        def skip_test
           skip 'skip test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :skip, self.reporter)
+      Minitest::Runnable.run_one_method(retry_test, :skip_test, self.reporter)
     end
 
-    refute reporter.passed?
+    assert reporter.passed?
     assert_empty output
   end
 end
