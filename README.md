@@ -32,7 +32,7 @@ Minitest::Retry.use!
 
 Options can be specified to `use!` method. Can specify options are as follows:
 
-```
+```ruby
 Minitest::Retry.use!(
   retry_count:  3  # The number of times to retry. The default is 3.
   verbose: true    # Whether or not to display the message at the time of retry. The default is true.
