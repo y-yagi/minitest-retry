@@ -28,9 +28,9 @@ class Minitest::RetryTest < Minitest::Test
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
     expect = <<-EOS
-[MiniestRetry] retry 'fail' count: 1,  msg: fail test
-[MiniestRetry] retry 'fail' count: 2,  msg: fail test
-[MiniestRetry] retry 'fail' count: 3,  msg: fail test
+[MinitestRetry] retry 'fail' count: 1,  msg: fail test
+[MinitestRetry] retry 'fail' count: 2,  msg: fail test
+[MinitestRetry] retry 'fail' count: 3,  msg: fail test
     EOS
 
     refute reporter.passed?
@@ -50,9 +50,9 @@ class Minitest::RetryTest < Minitest::Test
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
     expect = <<-EOS
-[MiniestRetry] retry 'fail' count: 1,  msg: Expected: 3
+[MinitestRetry] retry 'fail' count: 1,  msg: Expected: 3
   Actual: 1
-[MiniestRetry] retry 'fail' count: 2,  msg: Expected: 3
+[MinitestRetry] retry 'fail' count: 2,  msg: Expected: 3
   Actual: 2
     EOS
 
@@ -71,11 +71,11 @@ class Minitest::RetryTest < Minitest::Test
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
     expect = <<-EOS
-[MiniestRetry] retry 'fail' count: 1,  msg: fail test
-[MiniestRetry] retry 'fail' count: 2,  msg: fail test
-[MiniestRetry] retry 'fail' count: 3,  msg: fail test
-[MiniestRetry] retry 'fail' count: 4,  msg: fail test
-[MiniestRetry] retry 'fail' count: 5,  msg: fail test
+[MinitestRetry] retry 'fail' count: 1,  msg: fail test
+[MinitestRetry] retry 'fail' count: 2,  msg: fail test
+[MinitestRetry] retry 'fail' count: 3,  msg: fail test
+[MinitestRetry] retry 'fail' count: 4,  msg: fail test
+[MinitestRetry] retry 'fail' count: 5,  msg: fail test
     EOS
 
     refute reporter.passed?

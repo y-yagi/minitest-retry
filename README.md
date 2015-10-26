@@ -56,9 +56,9 @@ end
 ```console
 # Running:
 
-[MiniestRetry] retry 'test_fail' count: 1,  msg: test fail
-[MiniestRetry] retry 'test_fail' count: 2,  msg: test fail
-[MiniestRetry] retry 'test_fail' count: 3,  msg: test fail
+[MinitestRetry] retry 'test_fail' count: 1,  msg: test fail
+[MinitestRetry] retry 'test_fail' count: 2,  msg: test fail
+[MinitestRetry] retry 'test_fail' count: 3,  msg: test fail
 F
 
 Finished in 0.002479s, 403.4698 runs/s, 403.4698 assertions/s.
@@ -76,4 +76,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/y-yagi
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
