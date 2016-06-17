@@ -27,7 +27,7 @@ module Minitest
           retry_count.times do |count|
             if Minitest::Retry.verbose && Minitest::Retry.io
               msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
-                [method_name, count + 1, result.failures.join(",")]
+                [method_name, count + 1, result.failures.map { |f| f.message }.join(",")]
               Minitest::Retry.io.puts(msg)
             end
 
