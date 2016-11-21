@@ -2,8 +2,8 @@ require "minitest/retry/version"
 
 module Minitest
   module Retry
-    def self.use!(retry_count: 3, io: $stdout, verbose: true)
-      @retry_count, @io, @verbose = retry_count, io, verbose
+    def self.use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
+      @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
       Minitest.prepend(self)
     end
 
@@ -19,11 +19,23 @@ module Minitest
       @verbose
     end
 
+    def self.exceptions_to_retry
+      @exceptions_to_retry
+    end
+
+    def self.failure_to_retry?(failures = [])
+      return false if failures.empty?
+      return true if Minitest::Retry.exceptions_to_retry.empty?
+      errors = failures.map(&:error).map(&:class)
+      (errors & Minitest::Retry.exceptions_to_retry).any?
+    end
+
     module ClassMethods
       def run_one_method(klass, method_name)
         retry_count = Minitest::Retry.retry_count
         result = super(klass, method_name)
-        if !result.failures.empty? && !result.skipped?
+        return result unless Minitest::Retry.failure_to_retry?(result.failures)
+        if !result.skipped?
           retry_count.times do |count|
             if Minitest::Retry.verbose && Minitest::Retry.io
               msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
