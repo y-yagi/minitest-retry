@@ -147,5 +147,44 @@ class Minitest::RetryTest < Minitest::Test
     assert reporter.passed?
     assert_empty output
   end
-end
 
+  def test_retry_when_error_in_exceptions_to_retry
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! exceptions_to_retry: [TestError]
+        def raise_test_error
+          @@counter += 1;
+          raise TestError, 'This triggers a retry.'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+
+      assert_equal 4, retry_test.counter
+    end
+  end
+
+  def test_donot_retry_when_not_in_exceptions_to_retry
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! exceptions_to_retry: [TestError]
+        def raise_test_error
+          @@counter += 1
+          raise ArgumentError, 'This does not trigger a retry.'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, reporter)
+
+      assert_equal 1, retry_test.counter
+    end
+  end
+
+  class TestError < StandardError; end
+end
