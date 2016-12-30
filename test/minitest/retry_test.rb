@@ -1,22 +1,6 @@
 require 'test_helper'
 
 class Minitest::RetryTest < Minitest::Test
-  attr_accessor :reporter
-
-  def setup
-    self.reporter = Minitest::CompositeReporter.new
-    self.reporter << Minitest::SummaryReporter.new
-  end
-
-  def capture_stdout
-    out = StringIO.new
-    $stdout = out
-    yield
-    out.string
-  ensure
-    $stdout = STDOUT
-  end
-
   def test_display_retry_msg
     output = capture_stdout do
       retry_test = Class.new(Minitest::Test) do
@@ -48,9 +32,9 @@ class Minitest::RetryTest < Minitest::Test
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
     expect = <<-EOS
-[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{__FILE__}:45:in `fail'
-[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{__FILE__}:45:in `fail'
-[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{__FILE__}:45:in `fail'
+[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{__FILE__}:29:in `fail'
+[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{__FILE__}:29:in `fail'
+[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{__FILE__}:29:in `fail'
     EOS
 
     refute reporter.passed?
@@ -185,6 +169,4 @@ class Minitest::RetryTest < Minitest::Test
       assert_equal 1, retry_test.counter
     end
   end
-
-  class TestError < StandardError; end
 end
