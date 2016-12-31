@@ -2,42 +2,44 @@ require "minitest/retry/version"
 
 module Minitest
   module Retry
-    def self.use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
-      @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
-      @failure_callback = nil
-      Minitest.prepend(self)
-    end
+    class << self
+      def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
+        @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
+        @failure_callback = nil
+        Minitest.prepend(self)
+      end
 
-    def self.on_failure(&block)
-      return unless block_given?
-      @failure_callback = block
-    end
+      def on_failure(&block)
+        return unless block_given?
+        @failure_callback = block
+      end
 
-    def self.retry_count
-      @retry_count
-    end
+      def retry_count
+        @retry_count
+      end
 
-    def self.io
-      @io
-    end
+      def io
+        @io
+      end
 
-    def self.verbose
-      @verbose
-    end
+      def verbose
+        @verbose
+      end
 
-    def self.exceptions_to_retry
-      @exceptions_to_retry
-    end
+      def exceptions_to_retry
+        @exceptions_to_retry
+      end
 
-    def self.failure_callback
-      @failure_callback
-    end
+      def failure_callback
+        @failure_callback
+      end
 
-    def self.failure_to_retry?(failures = [])
-      return false if failures.empty?
-      return true if Minitest::Retry.exceptions_to_retry.empty?
-      errors = failures.map(&:error).map(&:class)
-      (errors & Minitest::Retry.exceptions_to_retry).any?
+      def failure_to_retry?(failures = [])
+        return false if failures.empty?
+        return true if Minitest::Retry.exceptions_to_retry.empty?
+        errors = failures.map(&:error).map(&:class)
+        (errors & Minitest::Retry.exceptions_to_retry).any?
+      end
     end
 
     module ClassMethods
