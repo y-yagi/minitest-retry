@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Run a callback on each test failure #15 [julien-meichelbeck]
+
 ## 0.1.6
 
 * Add exceptions_to_retry option #13 [panjan]
