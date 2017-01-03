@@ -41,12 +41,20 @@ Minitest::Retry.use!(
 )
 ```
 
-You can specify an `on_failure` callback which is executed at each retry:
+#### Callbacks
+The `on_failure` callback is executed each time a test fails:
 ```ruby
-Minitest::Retry.on_failure do
+Minitest::Retry.on_failure do |test_name|
   # code omitted
 end
 ```
+
+The `on_retry` callback is executed each time a test is retried:
+```ruby
+Minitest::Retry.on_retry do |test_name, retry_count|
+  # code omitted
+end
+
 
 
 ## Example

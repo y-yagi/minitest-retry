@@ -5,13 +5,18 @@ module Minitest
     class << self
       def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
         @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
-        @failure_callback = nil
+        @failure_callback, @retry_callback = nil, nil
         Minitest.prepend(self)
       end
 
       def on_failure(&block)
         return unless block_given?
         @failure_callback = block
+      end
+
+      def on_retry(&block)
+        return unless block_given?
+        @retry_callback = block
       end
 
       def retry_count
@@ -34,6 +39,10 @@ module Minitest
         @failure_callback
       end
 
+      def retry_callback
+        @retry_callback
+      end
+
       def failure_to_retry?(failures = [])
         return false if failures.empty?
         return true if Minitest::Retry.exceptions_to_retry.empty?
@@ -49,6 +58,7 @@ module Minitest
         if !result.skipped?
           Minitest::Retry.failure_callback.call if Minitest::Retry.failure_callback
           Minitest::Retry.retry_count.times do |count|
+            Minitest::Retry.retry_callback.call(method_name, count + 1) if Minitest::Retry.retry_callback
             if Minitest::Retry.verbose && Minitest::Retry.io
               msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
                 [method_name, count + 1, result.failures.map(&:message).join(",")]
