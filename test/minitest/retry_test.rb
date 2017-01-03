@@ -188,11 +188,13 @@ class Minitest::RetryTest < Minitest::Test
 
   def test_run_failure_callback_on_failure
     on_failure_block_has_ran = false
+    test_name = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_failure do
+        Minitest::Retry.on_failure do |failed_test|
           on_failure_block_has_ran = true
+          test_name = failed_test
         end
 
         def fail
@@ -201,6 +203,7 @@ class Minitest::RetryTest < Minitest::Test
       end
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
+    assert_equal :fail, test_name
     assert on_failure_block_has_ran
   end
 
