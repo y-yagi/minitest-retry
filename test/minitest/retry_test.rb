@@ -225,5 +225,28 @@ class Minitest::RetryTest < Minitest::Test
     refute on_failure_block_has_ran
   end
 
+  def test_run_retry_callback_on_each_retry
+    retry_counts = []
+    test_names = []
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+        Minitest::Retry.use!
+        Minitest::Retry.on_retry do |test_name, retry_count|
+          retry_counts << retry_count
+          test_names << test_name
+        end
+
+        def fail_sometimes
+          @@counter += 1
+          assert_equal 3, 0
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :fail_sometimes, self.reporter)
+    end
+    assert_equal [1, 2, 3], retry_counts
+    assert_equal [:fail_sometimes] * 3, test_names
+  end
+
   class TestError < StandardError; end
 end
