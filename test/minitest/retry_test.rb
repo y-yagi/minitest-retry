@@ -230,7 +230,6 @@ class Minitest::RetryTest < Minitest::Test
     test_names = []
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
-        @@counter = 0
         Minitest::Retry.use!
         Minitest::Retry.on_retry do |test_name, retry_count|
           retry_counts << retry_count
@@ -238,7 +237,6 @@ class Minitest::RetryTest < Minitest::Test
         end
 
         def fail_sometimes
-          @@counter += 1
           assert_equal 3, 0
         end
       end
