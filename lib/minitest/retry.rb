@@ -56,9 +56,9 @@ module Minitest
         result = super(klass, method_name)
         return result unless Minitest::Retry.failure_to_retry?(result.failures)
         if !result.skipped?
-          Minitest::Retry.failure_callback.call(method_name) if Minitest::Retry.failure_callback
+          Minitest::Retry.failure_callback.call(klass, method_name) if Minitest::Retry.failure_callback
           Minitest::Retry.retry_count.times do |count|
-            Minitest::Retry.retry_callback.call(method_name, count + 1) if Minitest::Retry.retry_callback
+            Minitest::Retry.retry_callback.call(klass, method_name, count + 1) if Minitest::Retry.retry_callback
             if Minitest::Retry.verbose && Minitest::Retry.io
               msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
                 [method_name, count + 1, result.failures.map(&:message).join(",")]
