@@ -188,12 +188,13 @@ class Minitest::RetryTest < Minitest::Test
 
   def test_run_failure_callback_on_failure
     on_failure_block_has_ran = false
-    test_name = nil
+    test_name, test_class, retry_test = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_failure do |failed_test|
+        Minitest::Retry.on_failure do |klass, failed_test|
           on_failure_block_has_ran = true
+          test_class = klass
           test_name = failed_test
         end
 
@@ -204,6 +205,7 @@ class Minitest::RetryTest < Minitest::Test
       Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
     end
     assert_equal :fail, test_name
+    assert_equal retry_test, test_class
     assert on_failure_block_has_ran
   end
 
@@ -226,14 +228,15 @@ class Minitest::RetryTest < Minitest::Test
   end
 
   def test_run_retry_callback_on_each_retry
-    retry_counts = []
-    test_names = []
+    retry_counts, test_names, test_classes = [], [], []
+    retry_test = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_retry do |test_name, retry_count|
+        Minitest::Retry.on_retry do |klass, test_name, retry_count|
           retry_counts << retry_count
           test_names << test_name
+          test_classes << klass
         end
 
         def fail_sometimes
@@ -244,6 +247,7 @@ class Minitest::RetryTest < Minitest::Test
     end
     assert_equal [1, 2, 3], retry_counts
     assert_equal [:fail_sometimes] * 3, test_names
+    assert_equal [retry_test] * 3, test_classes
   end
 
   class TestError < StandardError; end
