@@ -1,3 +1,8 @@
+## 0.1.8
+
+* Add retry callback #17 [julien-meichelbeck]
+* Pass test class and test name to failure callback #15, #16 [julien-meichelbeck]
+
 ## 0.1.7
 
 * Run a callback on each test failure #15 [julien-meichelbeck]
