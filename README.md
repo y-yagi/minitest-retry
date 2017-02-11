@@ -54,8 +54,7 @@ The `on_retry` callback is executed each time a test is retried:
 Minitest::Retry.on_retry do |klass, test_name, retry_count|
   # code omitted
 end
-
-
+```
 
 ## Example
 
