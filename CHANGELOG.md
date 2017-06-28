@@ -1,3 +1,7 @@
+## 0.1.9
+
+* Add on_consistent_failure callback #20 [staugaard]
+
 ## 0.1.8
 
 * Add retry callback #17 [julien-meichelbeck]
