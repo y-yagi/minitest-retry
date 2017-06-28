@@ -250,5 +250,28 @@ class Minitest::RetryTest < Minitest::Test
     assert_equal [retry_test] * 3, test_classes
   end
 
+  def test_run_consistent_failure_callback_on_failure
+    on_consistent_failure_block_call_count = 0
+    test_name, test_class, retry_test = nil
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        Minitest::Retry.use!
+        Minitest::Retry.on_consistent_failure do |klass, failed_test|
+          on_consistent_failure_block_call_count += 1
+          test_class = klass
+          test_name = failed_test
+        end
+
+        def fail
+          assert false, 'fail test'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+    end
+    assert_equal :fail, test_name
+    assert_equal retry_test, test_class
+    assert_equal 1, on_consistent_failure_block_call_count
+  end
+
   class TestError < StandardError; end
 end

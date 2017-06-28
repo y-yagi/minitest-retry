@@ -5,13 +5,18 @@ module Minitest
     class << self
       def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
         @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
-        @failure_callback, @retry_callback = nil, nil
+        @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
         Minitest.prepend(self)
       end
 
       def on_failure(&block)
         return unless block_given?
         @failure_callback = block
+      end
+
+      def on_consistent_failure(&block)
+        return unless block_given?
+        @consistent_failure_callback = block
       end
 
       def on_retry(&block)
@@ -37,6 +42,10 @@ module Minitest
 
       def failure_callback
         @failure_callback
+      end
+
+      def consistent_failure_callback
+        @consistent_failure_callback
       end
 
       def retry_callback
@@ -67,6 +76,10 @@ module Minitest
 
             result = super(klass, method_name)
             break if result.failures.empty?
+          end
+
+          if Minitest::Retry.consistent_failure_callback && !result.failures.empty?
+            Minitest::Retry.consistent_failure_callback.call(klass, method_name)
           end
         end
         result
