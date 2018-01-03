@@ -49,7 +49,7 @@ Minitest::Retry.on_failure do |klass, test_name|
 end
 ```
 
-The `on_consistent_failure` callback is executed whan a test consistently fails:
+The `on_consistent_failure` callback is executed when a test consistently fails:
 ```ruby
 Minitest::Retry.on_consistent_failure do |klass, test_name|
   # code omitted
