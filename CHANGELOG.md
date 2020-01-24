@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Pass a test result to failure and retry callbacks #29 [aabrahamian]
+
 ## 0.1.9
 
 * Add on_consistent_failure callback #20 [staugaard]
