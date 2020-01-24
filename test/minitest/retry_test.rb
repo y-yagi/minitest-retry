@@ -188,14 +188,15 @@ class Minitest::RetryTest < Minitest::Test
 
   def test_run_failure_callback_on_failure
     on_failure_block_has_ran = false
-    test_name, test_class, retry_test = nil
+    test_name, test_class, retry_test, result_in_callback = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_failure do |klass, failed_test|
+        Minitest::Retry.on_failure do |klass, failed_test, result|
           on_failure_block_has_ran = true
           test_class = klass
           test_name = failed_test
+          result_in_callback = result
         end
 
         def fail
@@ -207,6 +208,8 @@ class Minitest::RetryTest < Minitest::Test
     assert_equal :fail, test_name
     assert_equal retry_test, test_class
     assert on_failure_block_has_ran
+    refute_nil result_in_callback
+    assert_instance_of Minitest::Assertion, result_in_callback.failures[0]
   end
 
   def test_do_not_run_failure_callback_on_success
@@ -228,15 +231,16 @@ class Minitest::RetryTest < Minitest::Test
   end
 
   def test_run_retry_callback_on_each_retry
-    retry_counts, test_names, test_classes = [], [], []
+    retry_counts, test_names, test_classes, results_in_callbacks = [], [], [], []
     retry_test = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_retry do |klass, test_name, retry_count|
+        Minitest::Retry.on_retry do |klass, test_name, retry_count, result|
           retry_counts << retry_count
           test_names << test_name
           test_classes << klass
+          results_in_callbacks << result
         end
 
         def fail_sometimes
@@ -248,6 +252,8 @@ class Minitest::RetryTest < Minitest::Test
     assert_equal [1, 2, 3], retry_counts
     assert_equal [:fail_sometimes] * 3, test_names
     assert_equal [retry_test] * 3, test_classes
+    refute_empty results_in_callbacks
+    assert_equal [Minitest::Assertion] * 3, results_in_callbacks.map{|x| x.failures[0].class}
   end
 
   def test_run_consistent_failure_callback_on_failure
