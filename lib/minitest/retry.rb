@@ -79,7 +79,7 @@ module Minitest
           end
 
           if Minitest::Retry.consistent_failure_callback && !result.failures.empty?
-            Minitest::Retry.consistent_failure_callback.call(klass, method_name)
+            Minitest::Retry.consistent_failure_callback.call(klass, method_name, result)
           end
         end
         result

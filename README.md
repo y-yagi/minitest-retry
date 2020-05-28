@@ -51,7 +51,7 @@ end
 
 The `on_consistent_failure` callback is executed when a test consistently fails:
 ```ruby
-Minitest::Retry.on_consistent_failure do |klass, test_name|
+Minitest::Retry.on_consistent_failure do |klass, test_name, result|
   # code omitted
 end
 ```
