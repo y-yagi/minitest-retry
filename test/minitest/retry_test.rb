@@ -258,14 +258,15 @@ class Minitest::RetryTest < Minitest::Test
 
   def test_run_consistent_failure_callback_on_failure
     on_consistent_failure_block_call_count = 0
-    test_name, test_class, retry_test = nil
+    test_name, test_class, retry_test, result_in_callback = nil
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         Minitest::Retry.use!
-        Minitest::Retry.on_consistent_failure do |klass, failed_test|
+        Minitest::Retry.on_consistent_failure do |klass, failed_test, result|
           on_consistent_failure_block_call_count += 1
           test_class = klass
           test_name = failed_test
+          result_in_callback = result
         end
 
         def fail
@@ -277,6 +278,8 @@ class Minitest::RetryTest < Minitest::Test
     assert_equal :fail, test_name
     assert_equal retry_test, test_class
     assert_equal 1, on_consistent_failure_block_call_count
+    refute_nil result_in_callback
+    assert_instance_of Minitest::Assertion, result_in_callback.failures[0]
   end
 
   class TestError < StandardError; end
