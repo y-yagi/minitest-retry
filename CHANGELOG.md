@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Pass a test result to consistent failure callback #30 [rmacklin]
+
 ## 0.2.0
 
 * Pass a test result to failure and retry callbacks #29 [aabrahamian]
