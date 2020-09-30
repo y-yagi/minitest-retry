@@ -41,6 +41,17 @@ Minitest::Retry.use!(
 )
 ```
 
+#### Policy Callbacks
+
+These are optional in nature (useful to implement fine-grained policies).
+
+The `should_skip` callback is executed before a test is run:
+```ruby
+Minitest::Retry.should_skip do |klass, test_name|
+  # returning anything except nil/false will skip the test
+end
+```
+
 #### Callbacks
 The `on_failure` callback is executed each time a test fails:
 ```ruby
