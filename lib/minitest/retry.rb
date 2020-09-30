@@ -6,13 +6,18 @@ module Minitest
       def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [])
         @retry_count, @io, @verbose, @exceptions_to_retry = retry_count, io, verbose, exceptions_to_retry
         @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
-        @should_skip_callback = nil
+        @should_skip_callback, @should_retry_callback = nil, nil
         Minitest.prepend(self)
       end
 
       def should_skip(&block)
         return unless block_given?
         @should_skip_callback = block
+      end
+
+      def should_retry(&block)
+        return unless block_given?
+        @should_retry_callback = block
       end
 
       def on_failure(&block)
@@ -62,6 +67,10 @@ module Minitest
         @should_skip_callback
       end
 
+      def should_retry_callback
+        @should_retry_callback
+      end
+
       def failure_to_retry?(failures = [])
         return false if failures.empty?
         return true if Minitest::Retry.exceptions_to_retry.empty?
@@ -84,7 +93,12 @@ module Minitest
           end
         end
         result = super(klass, method_name)
-        return result unless Minitest::Retry.failure_to_retry?(result.failures)
+        perform_retry = if Minitest::Retry.should_retry_callback
+          Minitest::Retry.should_retry_callback.call(result)
+        else
+          Minitest::Retry.failure_to_retry?(result.failures)
+        end
+        return result unless perform_retry
         if !result.skipped?
           Minitest::Retry.failure_callback.call(klass, method_name, result) if Minitest::Retry.failure_callback
           Minitest::Retry.retry_count.times do |count|

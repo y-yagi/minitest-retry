@@ -52,6 +52,14 @@ Minitest::Retry.should_skip do |klass, test_name|
 end
 ```
 
+The `should_retry` callback is called after a test is run:
+```ruby
+Minitest::Retry.should_retry do |result|
+  # Use result.class, result.name and result.failures to decide.
+  # Calls Minitest::Retry.failure_to_retry? if not configured.
+end
+```
+
 #### Callbacks
 The `on_failure` callback is executed each time a test fails:
 ```ruby
