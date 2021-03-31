@@ -74,7 +74,7 @@ module Minitest
 
         result = super(klass, method_name)
 
-        klass_method_name = "#{klass.class.name}##{method_name}"
+        klass_method_name = "#{klass.name}##{method_name}"
         return result unless Minitest::Retry.failure_to_retry?(result.failures, klass_method_name)
         if !result.skipped?
           Minitest::Retry.failure_callback.call(klass, method_name, result) if Minitest::Retry.failure_callback

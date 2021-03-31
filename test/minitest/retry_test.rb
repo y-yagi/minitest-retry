@@ -190,10 +190,17 @@ class Minitest::RetryTest < Minitest::Test
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         @@counter = 0
+
+        class << self
+          def name
+            'TestClass'
+          end
+        end
+
         def self.counter
           @@counter
         end
-        Minitest::Retry.use! methods_to_retry: ["#{self.class.name}#fail"]
+        Minitest::Retry.use! methods_to_retry: ["TestClass#fail"]
         def fail
           @@counter += 1;
           assert false, 'fail test'
@@ -209,10 +216,17 @@ class Minitest::RetryTest < Minitest::Test
     capture_stdout do
       retry_test = Class.new(Minitest::Test) do
         @@counter = 0
+
+        class << self
+          def name
+            'TestClass'
+          end
+        end
+
         def self.counter
           @@counter
         end
-        Minitest::Retry.use! methods_to_retry: ["#{self.class.name}#fail"]
+        Minitest::Retry.use! methods_to_retry: ["TestClass#fail"]
         def another_fail
           @@counter += 1;
           assert false, 'fail test'
