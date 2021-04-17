@@ -71,7 +71,6 @@ module Minitest
 
     module ClassMethods
       def run_one_method(klass, method_name)
-
         result = super(klass, method_name)
 
         klass_method_name = "#{klass.name}##{method_name}"

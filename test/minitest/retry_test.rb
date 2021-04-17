@@ -157,7 +157,7 @@ class Minitest::RetryTest < Minitest::Test
         end
         Minitest::Retry.use! exceptions_to_retry: [TestError]
         def raise_test_error
-          @@counter += 1;
+          @@counter += 1
           raise TestError, 'This triggers a retry.'
         end
       end
@@ -202,7 +202,7 @@ class Minitest::RetryTest < Minitest::Test
         end
         Minitest::Retry.use! methods_to_retry: ["TestClass#fail"]
         def fail
-          @@counter += 1;
+          @@counter += 1
           assert false, 'fail test'
         end
       end
@@ -228,7 +228,7 @@ class Minitest::RetryTest < Minitest::Test
         end
         Minitest::Retry.use! methods_to_retry: ["TestClass#fail"]
         def another_fail
-          @@counter += 1;
+          @@counter += 1
           assert false, 'fail test'
         end
       end
