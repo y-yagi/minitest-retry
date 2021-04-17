@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Add `methods_to_retry` option #33 [edudepetris]
+
 ## 0.2.1
 
 * Pass a test result to consistent failure callback #30 [rmacklin]
