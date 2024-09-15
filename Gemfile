@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'pry'
+gem 'debug'
 # Specify your gem's dependencies in minitest-retry.gemspec
 gemspec
