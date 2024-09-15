@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Add `classes_to_retry` option #42 [y-yagi]
+
 ## 0.2.2
 
 * Add `methods_to_retry` option #33 [edudepetris]

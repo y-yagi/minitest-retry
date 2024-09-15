@@ -38,7 +38,8 @@ Minitest::Retry.use!(
   verbose: true,           # Whether or not to display the message at the time of retry. The default is true.
   io: $stdout,             # Display destination of retry when the message. The default is stdout.
   exceptions_to_retry: [], # List of exceptions that will trigger a retry (when empty, all exceptions will).
-  methods_to_retry:    []  # List of methods that will trigger a retry (when empty, all methods will).
+  methods_to_retry:    [], # List of methods that will trigger a retry (when empty, all methods will).
+  classes_to_retry:    []  # List of classes that will trigger a retry (when empty, all classes will).
 )
 ```
 

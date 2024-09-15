@@ -240,6 +240,58 @@ class Minitest::RetryTest < Minitest::Test
     end
   end
 
+  def test_retry_when_class_in_classes_to_retry
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+
+        class << self
+          def name
+            'TestClass'
+          end
+        end
+
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! classes_to_retry: ["Minitest::Test"]
+        def fail
+          @@counter += 1
+          assert false, 'fail test'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+
+      assert_equal 4, retry_test.counter
+    end
+  end
+
+  def test_donot_retry_when_not_in_classes_to_retry
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+
+        class << self
+          def name
+            'TestClass'
+          end
+        end
+
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! classes_to_retry: ["OtherClass"]
+        def another_fail
+          @@counter += 1
+          assert false, 'fail test'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :another_fail, self.reporter)
+
+      assert_equal 1, retry_test.counter
+    end
+  end
+
   def test_run_failure_callback_on_failure
     on_failure_block_has_ran = false
     test_name, test_class, retry_test, result_in_callback = nil
