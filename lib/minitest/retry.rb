@@ -3,8 +3,8 @@ require "minitest/retry/version"
 module Minitest
   module Retry
     class << self
-      def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [], methods_to_retry: [])
-        @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry = retry_count, io, verbose, exceptions_to_retry, methods_to_retry
+      def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [], methods_to_retry: [], classes_to_retry: [])
+        @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry, @classes_to_retry = retry_count, io, verbose, exceptions_to_retry, methods_to_retry, classes_to_retry
         @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
         Minitest.prepend(self)
       end
@@ -44,6 +44,10 @@ module Minitest
         @methods_to_retry
       end
 
+      def classes_to_retry
+        @classes_to_retry
+      end
+
       def failure_callback
         @failure_callback
       end
@@ -56,16 +60,21 @@ module Minitest
         @retry_callback
       end
 
-      def failure_to_retry?(failures = [], klass_method_name)
+      def failure_to_retry?(failures = [], klass_method_name, klass)
         return false if failures.empty?
 
         if methods_to_retry.any?
           return methods_to_retry.include?(klass_method_name)
         end
 
-        return true if Minitest::Retry.exceptions_to_retry.empty?
-        errors = failures.map(&:error).map(&:class)
-        (errors & Minitest::Retry.exceptions_to_retry).any?
+        if exceptions_to_retry.any?
+          errors = failures.map(&:error).map(&:class)
+          return (errors & exceptions_to_retry).any?
+        end
+
+        return true if classes_to_retry.empty?
+        ancestors = klass.ancestors.map(&:to_s)
+        return classes_to_retry.any? { |class_to_retry| ancestors.include?(class_to_retry) }
       end
     end
 
@@ -74,7 +83,7 @@ module Minitest
         result = super(klass, method_name)
 
         klass_method_name = "#{klass.name}##{method_name}"
-        return result unless Minitest::Retry.failure_to_retry?(result.failures, klass_method_name)
+        return result unless Minitest::Retry.failure_to_retry?(result.failures, klass_method_name, klass)
         if !result.skipped?
           Minitest::Retry.failure_callback.call(klass, method_name, result) if Minitest::Retry.failure_callback
           Minitest::Retry.retry_count.times do |count|
