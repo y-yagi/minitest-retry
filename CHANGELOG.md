@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Add `methods_to_skip` option #44 [y-yagi]
+
 ## 0.2.3
 
 * Add `classes_to_retry` option #42 [y-yagi]
