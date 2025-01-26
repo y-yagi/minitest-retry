@@ -3,8 +3,8 @@ require "minitest/retry/version"
 module Minitest
   module Retry
     class << self
-      def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [], methods_to_retry: [], classes_to_retry: [])
-        @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry, @classes_to_retry = retry_count, io, verbose, exceptions_to_retry, methods_to_retry, classes_to_retry
+      def use!(retry_count: 3, io: $stdout, verbose: true, exceptions_to_retry: [], methods_to_retry: [], classes_to_retry: [], methods_to_skip: [])
+        @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry, @classes_to_retry, @methods_to_skip = retry_count, io, verbose, exceptions_to_retry, methods_to_retry, classes_to_retry, methods_to_skip
         @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
         Minitest.prepend(self)
       end
@@ -60,6 +60,10 @@ module Minitest
         @retry_callback
       end
 
+      def methods_to_skip
+        @methods_to_skip
+      end
+
       def failure_to_retry?(failures = [], klass_method_name, klass)
         return false if failures.empty?
 
@@ -70,6 +74,10 @@ module Minitest
         if exceptions_to_retry.any?
           errors = failures.map(&:error).map(&:class)
           return (errors & exceptions_to_retry).any?
+        end
+
+        if methods_to_skip.any?
+          return !methods_to_skip.include?(klass_method_name)
         end
 
         return true if classes_to_retry.empty?
