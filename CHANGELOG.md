@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Add `exceptions_to_skip` option #48 [y-yagi]
+
 ## 0.2.4
 
 * Add `methods_to_skip` option #44 [y-yagi]
