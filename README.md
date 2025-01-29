@@ -40,7 +40,8 @@ Minitest::Retry.use!(
   exceptions_to_retry: [], # List of exceptions that will trigger a retry (when empty, all exceptions will).
   methods_to_retry:    [], # List of methods that will trigger a retry (when empty, all methods will).
   classes_to_retry:    [], # List of classes that will trigger a retry (when empty, all classes will).
-  methods_to_skip:     []  # List of methods that will skip a retry (when empty, all methods will retry).
+  methods_to_skip:     [], # List of methods that will skip a retry (when empty, all methods will retry).
+  exceptions_to_skip:  []  # List of exceptions that will skip a retry (when empty, all exceptions will retry).
 )
 ```
 

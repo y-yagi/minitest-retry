@@ -319,6 +319,44 @@ class Minitest::RetryTest < Minitest::Test
     end
   end
 
+  def test_retry_when_error_in_exceptions_to_skip
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! exceptions_to_skip: [TestError]
+        def raise_test_error
+          @@counter += 1
+          raise TestError, 'This does not trigger a retry.'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+
+      assert_equal 1, retry_test.counter
+    end
+  end
+
+  def test_retry_when_error_not_in_exceptions_to_skip
+    capture_stdout do
+      retry_test = Class.new(Minitest::Test) do
+        @@counter = 0
+        def self.counter
+          @@counter
+        end
+        Minitest::Retry.use! exceptions_to_skip: [TestError]
+        def raise_test_error
+          @@counter += 1
+          raise ArgumentError, 'This triggers a retry.'
+        end
+      end
+      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+
+      assert_equal 4, retry_test.counter
+    end
+  end
+
   def test_run_failure_callback_on_failure
     on_failure_block_has_ran = false
     test_name, test_class, retry_test, result_in_callback = nil
