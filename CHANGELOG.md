@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Support minitest 6 [y-yagi]
+
 ## 0.2.5
 
 * Add `exceptions_to_skip` option #48 [y-yagi]
