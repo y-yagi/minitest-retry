@@ -11,8 +11,8 @@ jobs:
     env:
       BUNDLE_GEMFILE: gemfiles/minitest_5.gemfile
     steps:
-    - uses: actions/checkout@v4
-    - uses: ruby/setup-ruby@v1
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+    - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
@@ -28,8 +28,8 @@ jobs:
     env:
       BUNDLE_GEMFILE: gemfiles/minitest_6.gemfile
     steps:
-    - uses: actions/checkout@v4
-    - uses: ruby/setup-ruby@v1
+    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+    - uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # v1.273.0
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
