@@ -93,39 +93,64 @@ module Minitest
         ancestors = klass.ancestors.map(&:to_s)
         return classes_to_retry.any? { |class_to_retry| ancestors.include?(class_to_retry) }
       end
-    end
 
-    module ClassMethods
-      def run_one_method(klass, method_name)
-        result = super(klass, method_name)
-
+      def run_with_retry(klass, method_name)
         klass_method_name = "#{klass.name}##{method_name}"
-        return result unless Minitest::Retry.failure_to_retry?(result.failures, klass_method_name, klass)
-        if !result.skipped?
-          Minitest::Retry.failure_callback.call(klass, method_name, result) if Minitest::Retry.failure_callback
-          Minitest::Retry.retry_count.times do |count|
-            Minitest::Retry.retry_callback.call(klass, method_name, count + 1, result) if Minitest::Retry.retry_callback
-            if Minitest::Retry.verbose && Minitest::Retry.io
-              msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
-                [method_name, count + 1, result.failures.map(&:message).join(",")]
-              Minitest::Retry.io.puts(msg)
-            end
+        result = yield
 
-            result = super(klass, method_name)
-            break if result.failures.empty?
+        return result unless failure_to_retry?(result.failures, klass_method_name, klass)
+        return result if result.skipped?
+
+        failure_callback&.call(klass, method_name, result)
+
+        retry_count.times do |count|
+          retry_callback&.call(klass, method_name, count + 1, result)
+
+          if verbose && io
+            msg = "[MinitestRetry] retry '%s' count: %s,  msg: %s\n" %
+              [method_name, count + 1, result.failures.map(&:message).join(",")]
+            io.puts(msg)
           end
 
-          if Minitest::Retry.consistent_failure_callback && !result.failures.empty?
-            Minitest::Retry.consistent_failure_callback.call(klass, method_name, result)
-          end
+          result = yield
+          break if result.failures.empty?
         end
+
+        if consistent_failure_callback && !result.failures.empty?
+          consistent_failure_callback.call(klass, method_name, result)
+        end
+
         result
       end
     end
 
+    module ClassMethods
+      def run_one_method(klass, method_name)
+        Minitest::Retry.run_with_retry(klass, method_name) do
+          super(klass, method_name)
+        end
+      end
+    end
+
+    module RunnableMethods
+      def run(klass, method_name, reporter)
+        reporter.prerecord klass, method_name
+        result = Minitest::Retry.run_with_retry(klass, method_name) do
+          klass.new(method_name).run
+        end
+        reporter.record result
+      end
+    end
+
     def self.prepended(base)
-      class << base
-        prepend ClassMethods
+      if Minitest::VERSION > "6"
+        class << Minitest::Runnable
+          prepend RunnableMethods
+        end
+      else
+        class << base
+          prepend ClassMethods
+        end
       end
     end
   end

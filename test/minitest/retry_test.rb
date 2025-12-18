@@ -17,6 +17,14 @@ class Minitest::RetryTest < Minitest::Test
     $stdout = STDOUT
   end
 
+  def run_test(klass, method_name)
+    if Minitest::Runnable.respond_to?(:run_one_method)
+      Minitest::Runnable.run_one_method(klass, method_name, reporter)
+    else
+      Minitest::Runnable.run(klass, method_name, reporter)
+    end
+  end
+
   def test_display_retry_msg
     output = capture_stdout do
       retry_test = Class.new(Minitest::Test) do
@@ -25,7 +33,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
     expect = <<-EOS
 [MinitestRetry] retry 'fail' count: 1,  msg: fail test
@@ -45,15 +53,15 @@ class Minitest::RetryTest < Minitest::Test
           raise 'parsing error'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
 
     failed_method_name = RUBY_VERSION >= "3.4" ? "'fail'" : "`fail'"
     path = Gem::Version.new(Minitest::VERSION) >= Gem::Version.new("5.21.0") ? "test/minitest/retry_test.rb" : __FILE__
     expect = <<-EOS
-[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{path}:45:in #{failed_method_name}
-[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{path}:45:in #{failed_method_name}
-[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{path}:45:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
     EOS
 
     refute reporter.passed?
@@ -70,7 +78,7 @@ class Minitest::RetryTest < Minitest::Test
           assert_equal 3, @@counter
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
     expect = <<-EOS
 [MinitestRetry] retry 'fail' count: 1,  msg: Expected: 3
@@ -91,7 +99,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
     expect = <<-EOS
 [MinitestRetry] retry 'fail' count: 1,  msg: fail test
@@ -115,7 +123,7 @@ class Minitest::RetryTest < Minitest::Test
           assert_equal 3, @@counter
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
 
     assert reporter.passed?
@@ -129,7 +137,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
 
     refute reporter.passed?
@@ -144,7 +152,7 @@ class Minitest::RetryTest < Minitest::Test
           skip 'skip test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :skip_test, self.reporter)
+      run_test(retry_test, :skip_test)
     end
 
     assert reporter.passed?
@@ -164,7 +172,7 @@ class Minitest::RetryTest < Minitest::Test
           raise TestError, 'This triggers a retry.'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+      run_test(retry_test, :raise_test_error)
 
       assert_equal 4, retry_test.counter
     end
@@ -183,7 +191,7 @@ class Minitest::RetryTest < Minitest::Test
           raise ArgumentError, 'This does not trigger a retry.'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, reporter)
+      run_test(retry_test, :raise_test_error)
 
       assert_equal 1, retry_test.counter
     end
@@ -209,7 +217,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
 
       assert_equal 4, retry_test.counter
     end
@@ -235,7 +243,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :another_fail, self.reporter)
+      run_test(retry_test, :another_fail)
 
       assert_equal 1, retry_test.counter
     end
@@ -261,7 +269,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
 
       assert_equal 4, retry_test.counter
     end
@@ -287,7 +295,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :another_fail, self.reporter)
+      run_test(retry_test, :another_fail)
 
       assert_equal 1, retry_test.counter
     end
@@ -313,7 +321,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
 
       assert_equal 1, retry_test.counter
     end
@@ -332,7 +340,7 @@ class Minitest::RetryTest < Minitest::Test
           raise TestError, 'This does not trigger a retry.'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+      run_test(retry_test, :raise_test_error)
 
       assert_equal 1, retry_test.counter
     end
@@ -351,7 +359,7 @@ class Minitest::RetryTest < Minitest::Test
           raise ArgumentError, 'This triggers a retry.'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :raise_test_error, self.reporter)
+      run_test(retry_test, :raise_test_error)
 
       assert_equal 4, retry_test.counter
     end
@@ -374,7 +382,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
     assert_equal :fail, test_name
     assert_equal retry_test, test_class
@@ -396,7 +404,7 @@ class Minitest::RetryTest < Minitest::Test
           assert true, 'success test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :success, self.reporter)
+      run_test(retry_test, :success)
     end
     refute on_failure_block_has_ran
   end
@@ -418,7 +426,7 @@ class Minitest::RetryTest < Minitest::Test
           assert_equal 3, 0
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail_sometimes, self.reporter)
+      run_test(retry_test, :fail_sometimes)
     end
     assert_equal [1, 2, 3], retry_counts
     assert_equal [:fail_sometimes] * 3, test_names
@@ -444,7 +452,7 @@ class Minitest::RetryTest < Minitest::Test
           assert false, 'fail test'
         end
       end
-      Minitest::Runnable.run_one_method(retry_test, :fail, self.reporter)
+      run_test(retry_test, :fail)
     end
     assert_equal :fail, test_name
     assert_equal retry_test, test_class

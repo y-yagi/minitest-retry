@@ -3,18 +3,36 @@ name: CI
 on: [push]
 
 jobs:
-  build:
+  minitest-5:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         ruby: [ '3.4', '3.3', '3.2', '3.1', '3.0', '2.7', '2.6', '2.5', '2.4', '2.3' ]
+    env:
+      BUNDLE_GEMFILE: gemfiles/minitest_5.gemfile
     steps:
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
-      run: |
-        bundle install
+      run: bundle install
+    - name: Run test
+      run: bundle exec rake
+
+  minitest-6:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [ '3.4', '3.3', '3.2' ]
+    env:
+      BUNDLE_GEMFILE: gemfiles/minitest_6.gemfile
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Install dependencies
+      run: bundle install
     - name: Run test
       run: bundle exec rake
