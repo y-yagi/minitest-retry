@@ -1,6 +1,6 @@
 ## 0.3.0
 
-* Support minitest 6 [y-yagi]
+* Support minitest v6 #50 [y-yagi]
 
 ## 0.2.5
 
