@@ -1,4 +1,5 @@
 require "minitest/retry/version"
+require "minitest/retry/parallel"
 
 module Minitest
   module Retry
@@ -7,6 +8,7 @@ module Minitest
         @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry, @classes_to_retry, @methods_to_skip, @exceptions_to_skip = retry_count, io, verbose, exceptions_to_retry, methods_to_retry, classes_to_retry, methods_to_skip, exceptions_to_skip
         @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
         Minitest.prepend(self)
+        Minitest::Parallel::Executor.prepend(Minitest::Retry::ParallelExecutor) if Minitest::VERSION > "6"
       end
 
       def on_failure(&block)

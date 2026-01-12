@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'open3'
 
 class Minitest::RetryTest < Minitest::Test
   attr_accessor :reporter
@@ -59,9 +60,9 @@ class Minitest::RetryTest < Minitest::Test
     failed_method_name = RUBY_VERSION >= "3.4" ? "'fail'" : "`fail'"
     path = Gem::Version.new(Minitest::VERSION) >= Gem::Version.new("5.21.0") ? "test/minitest/retry_test.rb" : __FILE__
     expect = <<-EOS
-[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
-[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
-[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{path}:53:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 1,  msg: RuntimeError: parsing error\n    #{path}:54:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 2,  msg: RuntimeError: parsing error\n    #{path}:54:in #{failed_method_name}
+[MinitestRetry] retry 'fail' count: 3,  msg: RuntimeError: parsing error\n    #{path}:54:in #{failed_method_name}
     EOS
 
     refute reporter.passed?
@@ -459,6 +460,24 @@ class Minitest::RetryTest < Minitest::Test
     assert_equal 1, on_consistent_failure_block_call_count
     refute_nil result_in_callback
     assert_instance_of Minitest::Assertion, result_in_callback.failures[0]
+  end
+
+  def test_parallelize_me_runs_with_retry
+    fixture = File.expand_path('../fixtures/parallel.rb', __dir__)
+    stdout, stderr, status = Open3.capture3(Gem.ruby, '-Ilib:test', fixture)
+
+    message = <<~MSG
+      **parallelized test failed**
+
+      stdout:
+      #{stdout}
+      stderr:
+      #{stderr}
+    MSG
+
+    assert status.success?, message
+    assert_includes stdout, "[MinitestRetry] retry 'test_flaky' count: 1"
+    refute_includes stdout, "[MinitestRetry] retry 'test_flaky' count: 2"
   end
 
   class TestError < StandardError; end
