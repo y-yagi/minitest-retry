@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Fix a bug where tests were not retried during parallel execution with minitest 6#54 [y-yagi]
+
 ## 0.3.0
 
 * Support minitest v6 #50 [y-yagi]
