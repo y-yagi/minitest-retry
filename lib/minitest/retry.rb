@@ -1,5 +1,4 @@
 require "minitest/retry/version"
-require "minitest/retry/parallel"
 
 module Minitest
   module Retry
@@ -8,7 +7,7 @@ module Minitest
         @retry_count, @io, @verbose, @exceptions_to_retry, @methods_to_retry, @classes_to_retry, @methods_to_skip, @exceptions_to_skip = retry_count, io, verbose, exceptions_to_retry, methods_to_retry, classes_to_retry, methods_to_skip, exceptions_to_skip
         @failure_callback, @consistent_failure_callback, @retry_callback = nil, nil, nil
         Minitest.prepend(self)
-        Minitest::Parallel::Executor.prepend(Minitest::Retry::ParallelExecutor) if Minitest::VERSION > "6"
+        Minitest::Test.prepend(TestWithRetry) if Minitest::VERSION > "6"
       end
 
       def on_failure(&block)
@@ -96,7 +95,8 @@ module Minitest
         return classes_to_retry.any? { |class_to_retry| ancestors.include?(class_to_retry) }
       end
 
-      def run_with_retry(klass, method_name)
+      def run_with_retry(klass_or_instance, method_name)
+        klass = klass_or_instance.instance_of?(Class) ? klass_or_instance : klass_or_instance.class
         klass_method_name = "#{klass.name}##{method_name}"
         result = yield
 
@@ -114,6 +114,8 @@ module Minitest
             io.puts(msg)
           end
 
+          # NOTE: Only keep the last result when executed multiple times.
+          klass_or_instance.failures.clear if klass_or_instance.respond_to?(:failures)
           result = yield
           break if result.failures.empty?
         end
@@ -134,22 +136,17 @@ module Minitest
       end
     end
 
-    module RunnableMethods
-      def run(klass, method_name, reporter)
-        reporter.prerecord klass, method_name
-        result = Minitest::Retry.run_with_retry(klass, method_name) do
-          klass.new(method_name).run
+    module TestWithRetry
+      def run
+        result = Minitest::Retry.run_with_retry(self, self.name) do
+          super
         end
-        reporter.record result
+        result
       end
     end
 
     def self.prepended(base)
-      if Minitest::VERSION > "6"
-        class << Minitest::Runnable
-          prepend RunnableMethods
-        end
-      else
+      unless Minitest::VERSION > "6"
         class << base
           prepend ClassMethods
         end
