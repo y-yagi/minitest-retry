@@ -1,3 +1,4 @@
+require "minitest"
 require "minitest/retry/version"
 
 module Minitest
