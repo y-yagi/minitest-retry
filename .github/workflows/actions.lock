@@ -7,7 +7,7 @@ workflows:
         - 'actions/checkout@v4.2.2'
         - 'ruby/setup-ruby@v1.338.0'
         - 'rubygems/release-gem@v1.1.0'
-        - 'step-security/harden-runner@v2.11.0'
+        - 'step-security/harden-runner@v2.16.0'
     '.github/workflows/stale.yml':
         - 'actions/stale@v9.1.0'
     '.github/workflows/ubuntu.yml':
@@ -48,8 +48,8 @@ dependencies:
         repo_id: 731435765
         uses:
             - 'rubygems/configure-rubygems-credentials@v1.0.0'
-    'step-security/harden-runner@v2.11.0':
-        ref: 'v2.11.0'
-        commit: 'sha1-4d991eb9b905ef189e4c376166672c3f2f230481'
+    'step-security/harden-runner@v2.16.0':
+        ref: 'v2.16.0'
+        commit: 'sha1-fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594'
         owner_id: 88700172
         repo_id: 422287306
