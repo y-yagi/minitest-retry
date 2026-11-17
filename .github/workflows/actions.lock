@@ -5,14 +5,14 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/push_gem.yml':
         - 'actions/checkout@v4.2.2'
-        - 'ruby/setup-ruby@v1.234.0'
+        - 'ruby/setup-ruby@v1.338.0'
         - 'rubygems/release-gem@v1.1.0'
         - 'step-security/harden-runner@v2.11.0'
     '.github/workflows/stale.yml':
         - 'actions/stale@v9.1.0'
     '.github/workflows/ubuntu.yml':
         - 'actions/checkout@v4.3.1'
-        - 'ruby/setup-ruby@v1.273.0'
+        - 'ruby/setup-ruby@v1.338.0'
     '.github/workflows/verify-lockfile.yml':
         - 'actions/checkout@v4.3.1'
 dependencies:
@@ -31,14 +31,9 @@ dependencies:
         commit: 'sha1-5bef64f19d7facfb25b37b414482c7164d639639'
         owner_id: 44036562
         repo_id: 200437066
-    'ruby/setup-ruby@v1.234.0':
-        ref: 'v1.234.0'
-        commit: 'sha1-2e007403fc1ec238429ecaa57af6f22f019cc135'
-        owner_id: 210414
-        repo_id: 231208785
-    'ruby/setup-ruby@v1.273.0':
-        ref: 'v1.273.0'
-        commit: 'sha1-a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a'
+    'ruby/setup-ruby@v1.338.0':
+        ref: 'v1.338.0'
+        commit: 'sha1-b3aaceaef7e0ee231b499e7b5f49c03fc1d32199'
         owner_id: 210414
         repo_id: 231208785
     'rubygems/configure-rubygems-credentials@v1.0.0':

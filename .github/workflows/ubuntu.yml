@@ -12,7 +12,7 @@ jobs:
       BUNDLE_GEMFILE: gemfiles/minitest_5.gemfile
     steps:
     - uses: actions/checkout@v4.3.1
-    - uses: ruby/setup-ruby@v1.273.0
+    - uses: ruby/setup-ruby@v1.338.0
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
@@ -29,7 +29,7 @@ jobs:
       BUNDLE_GEMFILE: gemfiles/minitest_6.gemfile
     steps:
     - uses: actions/checkout@v4.3.1
-    - uses: ruby/setup-ruby@v1.273.0
+    - uses: ruby/setup-ruby@v1.338.0
       with:
         ruby-version: ${{ matrix.ruby }}
     - name: Install dependencies
